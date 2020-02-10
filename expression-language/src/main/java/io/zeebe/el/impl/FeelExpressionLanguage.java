@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.zeebe.el.EvaluationResult;
 import io.zeebe.el.Expression;
 import io.zeebe.el.ExpressionLanguage;
+import io.zeebe.el.ResultType;
 import io.zeebe.msgpack.spec.MsgPackReader;
 import io.zeebe.msgpack.spec.MsgPackWriter;
 import java.io.IOException;
@@ -113,7 +114,7 @@ public final class FeelExpressionLanguage implements ExpressionLanguage {
 
       } else {
         final var result = evalResult.right().get();
-        return new FeelEvaluationResult(expression, result);
+        return new FeelEvaluationResult(expression, ResultType.STRING, result);
       }
 
     } catch (final IOException e) {

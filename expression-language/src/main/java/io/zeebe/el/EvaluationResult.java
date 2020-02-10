@@ -13,7 +13,7 @@ public interface EvaluationResult {
 
   String getExpression();
 
-  String getType();
+  ResultType getType();
 
   DirectBuffer asString();
 

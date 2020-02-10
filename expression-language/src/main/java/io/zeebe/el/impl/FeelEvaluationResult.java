@@ -9,16 +9,20 @@ package io.zeebe.el.impl;
 
 import io.zeebe.el.EvaluationResult;
 import io.zeebe.el.Expression;
+import io.zeebe.el.ResultType;
 import io.zeebe.util.buffer.BufferUtil;
 import org.agrona.DirectBuffer;
 
 public final class FeelEvaluationResult implements EvaluationResult {
 
   private final Expression expression;
+  private final ResultType resultType;
   private final Object result;
 
-  public FeelEvaluationResult(final Expression expression, final Object result) {
+  public FeelEvaluationResult(
+      final Expression expression, final ResultType resultType, final Object result) {
     this.expression = expression;
+    this.resultType = resultType;
     this.result = result;
   }
 
@@ -28,16 +32,15 @@ public final class FeelEvaluationResult implements EvaluationResult {
   }
 
   @Override
-  public String getType() {
-    return null;
+  public ResultType getType() {
+    return resultType;
   }
 
   @Override
   public DirectBuffer asString() {
-    if (result instanceof String) {
-      return BufferUtil.wrapString((String) result);
+    if (resultType == ResultType.STRING) {
+      return BufferUtil.wrapString(result.toString());
     }
-
     return null;
   }
 

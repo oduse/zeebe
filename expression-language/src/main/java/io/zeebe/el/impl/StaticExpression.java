@@ -9,6 +9,7 @@ package io.zeebe.el.impl;
 
 import io.zeebe.el.EvaluationResult;
 import io.zeebe.el.Expression;
+import io.zeebe.el.ResultType;
 import io.zeebe.util.buffer.BufferUtil;
 import org.agrona.DirectBuffer;
 
@@ -43,8 +44,8 @@ public final class StaticExpression implements Expression, EvaluationResult {
   }
 
   @Override
-  public String getType() {
-    return null;
+  public ResultType getType() {
+    return ResultType.STRING;
   }
 
   @Override

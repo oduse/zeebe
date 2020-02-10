@@ -9,6 +9,7 @@ package io.zeebe.el.impl;
 
 import io.zeebe.el.EvaluationResult;
 import io.zeebe.el.Expression;
+import io.zeebe.el.ResultType;
 import org.agrona.DirectBuffer;
 
 public final class EvaluationFailure implements EvaluationResult {
@@ -27,7 +28,7 @@ public final class EvaluationFailure implements EvaluationResult {
   }
 
   @Override
-  public String getType() {
+  public ResultType getType() {
     return null;
   }
 
