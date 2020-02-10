@@ -1,3 +1,10 @@
+/*
+ * Copyright Camunda Services GmbH and/or licensed to Camunda Services GmbH under
+ * one or more contributor license agreements. See the NOTICE file distributed
+ * with this work for additional information regarding copyright ownership.
+ * Licensed under the Zeebe Community License 1.0. You may not use this file
+ * except in compliance with the Zeebe Community License 1.0.
+ */
 package io.zeebe.el.impl;
 
 import static io.zeebe.util.EnsureUtil.ensureNotNull;
@@ -7,6 +14,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.zeebe.el.EvaluationResult;
 import io.zeebe.el.Expression;
 import io.zeebe.el.ExpressionLanguage;
+import io.zeebe.msgpack.spec.MsgPackReader;
+import io.zeebe.msgpack.spec.MsgPackWriter;
 import java.io.IOException;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -17,9 +26,9 @@ import org.msgpack.jackson.dataformat.MessagePackFactory;
 public final class FeelExpressionLanguage implements ExpressionLanguage {
 
   private static final Pattern EXPRESSION_PATTERN = Pattern.compile("\\$\\{(.+)\\}");
-  private static final Pattern STATIC_VALUE_PATTERN = Pattern.compile("[a-zA-Z]+");
+  private static final Pattern STATIC_VALUE_PATTERN = Pattern.compile("[a-zA-Z][a-zA-Z0-9_\\-]*");
 
-  private static final FeelEngine feelEngine = new FeelEngine.Builder().build();
+  private final FeelEngine feelEngine = new FeelEngine.Builder().build();
 
   @Override
   public Expression parseExpression(final String expression) {
@@ -86,6 +95,9 @@ public final class FeelExpressionLanguage implements ExpressionLanguage {
       final DirectBuffer variables,
       final FeelExpression feelExpression) {
     final var parsedExpression = feelExpression.getParsedExpression();
+
+    new MsgPackWriter();
+    new MsgPackReader();
 
     final var objectMapper = new ObjectMapper(new MessagePackFactory());
     try {
