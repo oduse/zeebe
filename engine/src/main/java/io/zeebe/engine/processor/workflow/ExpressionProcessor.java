@@ -29,7 +29,7 @@ public final class ExpressionProcessor {
           ErrorType.EXTRACT_VALUE_ERROR,
           String.format(
               "Failed to evaluate expression '%s': %s",
-              expression.getExpression(), evaluationResult.getFailureMessage()));
+              evaluationResult.getExpression(), evaluationResult.getFailureMessage()));
       return null;
     }
 
@@ -40,7 +40,7 @@ public final class ExpressionProcessor {
           ErrorType.EXTRACT_VALUE_ERROR,
           String.format(
               "Expected result of the expression '%s' to be a STRING, but found '%s'.",
-              expression.getExpression(), evaluationResult.getType()));
+              evaluationResult.getExpression(), evaluationResult.getType()));
       return null;
     }
 

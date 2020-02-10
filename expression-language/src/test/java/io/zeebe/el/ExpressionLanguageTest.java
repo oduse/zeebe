@@ -1,10 +1,16 @@
 package io.zeebe.el;
 
+import static io.zeebe.test.util.MsgPackUtil.asMsgPack;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.zeebe.util.buffer.BufferUtil;
+import java.util.Map;
+import org.agrona.DirectBuffer;
 import org.junit.Test;
 
 public class ExpressionLanguageTest {
+
+  private static final DirectBuffer NO_VARIABLES = asMsgPack(Map.of());
 
   private final ExpressionLanguage expressionLanguage =
       ExpressionLanguageFactory.createExpressionLanguage();
@@ -49,6 +55,48 @@ public class ExpressionLanguageTest {
     assertThat(expression.getExpression()).isEqualTo("x.y");
     assertThat(expression.getFailureMessage())
         .isEqualTo(
-            "Expected expression (e.g. '${variableName}') or static value (e.g. 'jobType') but found 'x.y'");
+            "Expected FEEL expression (e.g. '${variableName}') or static value (e.g. 'jobType') but found 'x.y'");
+  }
+
+  @Test
+  public void shouldEvaluateStaticValue() {
+    final var expression = expressionLanguage.parseExpression("x");
+    final var evaluationResult = expressionLanguage.evaluateExpression(expression, NO_VARIABLES);
+
+    assertThat(evaluationResult).isNotNull();
+    assertThat(evaluationResult.isFailure()).isFalse();
+    assertThat(evaluationResult.asString()).isEqualTo(BufferUtil.wrapString("x"));
+  }
+
+  @Test
+  public void shouldEvaluateExpression() {
+    final var expression = expressionLanguage.parseExpression("${x}");
+    final var evaluationResult =
+        expressionLanguage.evaluateExpression(expression, asMsgPack(Map.of("x", "x")));
+
+    assertThat(evaluationResult).isNotNull();
+    assertThat(evaluationResult.isFailure()).isFalse();
+    assertThat(evaluationResult.asString()).isEqualTo(BufferUtil.wrapString("x"));
+  }
+
+  @Test
+  public void shouldEvaluateExpressionWithMissingVariables() {
+    final var expression = expressionLanguage.parseExpression("${x}");
+    final var evaluationResult = expressionLanguage.evaluateExpression(expression, NO_VARIABLES);
+
+    assertThat(evaluationResult).isNotNull();
+    assertThat(evaluationResult.isFailure()).isTrue();
+    assertThat(evaluationResult.getFailureMessage())
+        .startsWith("failed to evaluate expression 'x': no variable found for name 'x'");
+  }
+
+  @Test
+  public void shouldEvaluateInvalidExpression() {
+    final var expression = expressionLanguage.parseExpression("x.y");
+    final var evaluationResult = expressionLanguage.evaluateExpression(expression, NO_VARIABLES);
+
+    assertThat(evaluationResult).isNotNull();
+    assertThat(evaluationResult.isFailure()).isTrue();
+    assertThat(evaluationResult.getFailureMessage()).startsWith("Expected FEEL expression");
   }
 }

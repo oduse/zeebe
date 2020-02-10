@@ -30,4 +30,8 @@ public final class FeelExpression implements Expression {
   public String getFailureMessage() {
     return null;
   }
+
+  public ParsedExpression getParsedExpression() {
+    return expression;
+  }
 }
